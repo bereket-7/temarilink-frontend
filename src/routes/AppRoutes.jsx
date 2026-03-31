@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '../providers/AuthProvider';
 import { useAuth } from '../hooks/useAuth';
-import DashboardLayout from '../layouts/DashboardLayout';
+import ModernDashboardLayout from '../layouts/ModernDashboardLayout';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Students from '../pages/Students';
@@ -13,8 +13,8 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="loading-overlay">
+        <div className="loading-spinner"></div>
       </div>
     );
   }
@@ -27,8 +27,8 @@ const PublicRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="loading-overlay">
+        <div className="loading-spinner"></div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ const AppRoutesContent = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardLayout />
+            <ModernDashboardLayout />
           </ProtectedRoute>
         }
       >

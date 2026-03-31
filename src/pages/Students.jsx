@@ -1,50 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, UserPlus, Filter } from 'lucide-react';
-import apiClient from '../api/client';
+import { useApi, useMutation } from '../hooks/useApi';
 
 const Students = () => {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    full_name: '',
     grade: '',
-    section: ''
+    section: '',
+    school: ''
   });
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
-    try {
-      const response = await apiClient.get('/students');
-      setStudents(response.data);
-    } catch (error) {
-      console.error('Failed to fetch students:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Use the custom hook for API calls
+  const { data: students = [], loading, error, refetch } = useApi('/students/');
+  const { mutate: addStudent, loading: adding } = useMutation('/students/');
+  const { mutate: deleteStudent } = useMutation('/students/');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiClient.post('/students', formData);
+      await addStudent(formData);
       setShowAddModal(false);
       setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
+        full_name: '',
         grade: '',
-        section: ''
+        section: '',
+        school: ''
       });
-      fetchStudents();
+      refetch();
     } catch (error) {
       console.error('Failed to add student:', error);
     }
@@ -53,8 +37,8 @@ const Students = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        await apiClient.delete(`/students/${id}`);
-        fetchStudents();
+        await deleteStudent(null, 'delete');
+        refetch();
       } catch (error) {
         console.error('Failed to delete student:', error);
       }
@@ -62,8 +46,9 @@ const Students = () => {
   };
 
   const filteredStudents = students.filter(student =>
-    `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+    student.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.grade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.section?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -120,13 +105,13 @@ const Students = () => {
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phone
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Grade
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Section
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  School ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -145,19 +130,19 @@ const Students = () => {
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {student.firstName} {student.lastName}
+                          {student.full_name}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {student.email}
+                    {student.grade}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {student.phone}
+                    {student.section}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {student.grade} - {student.section}
+                    {student.school?.substring(0, 8)}...
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-blue-600 hover:text-blue-900 mr-3">
@@ -183,37 +168,11 @@ const Students = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Student</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
               <input
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <input
-                type="tel"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                type="text"
+                placeholder="Full Name"
+                value={formData.full_name}
+                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -235,12 +194,21 @@ const Students = () => {
                   required
                 />
               </div>
+              <input
+                type="text"
+                placeholder="School ID"
+                value={formData.school}
+                onChange={(e) => setFormData({...formData, school: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                  disabled={adding}
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  Add Student
+                  {adding ? 'Adding...' : 'Add Student'}
                 </button>
                 <button
                   type="button"

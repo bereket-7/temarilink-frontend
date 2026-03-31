@@ -7,13 +7,13 @@ const GlassCard = ({
   padding = 'normal',
   hover = true 
 }) => {
-  const baseClasses = 'rounded-2xl transition-all duration-300';
+  const baseClasses = 'rounded-2xl transition-all duration-300 backdrop-blur-xl';
   
   const variants = {
-    default: 'glass',
-    light: 'glass-light',
-    dark: 'glass-dark',
-    solid: 'bg-white border border-gray-200 shadow-lg'
+    default: 'bg-white/80 border border-white/20 shadow-xl',
+    light: 'bg-white/60 border border-white/30 shadow-lg',
+    dark: 'bg-gray-900/80 border border-gray-700/50 shadow-xl',
+    solid: 'bg-white border border-gray-200 shadow-xl'
   };
   
   const paddings = {
@@ -24,7 +24,7 @@ const GlassCard = ({
     xl: 'p-10'
   };
   
-  const hoverEffects = hover ? 'hover:transform hover:scale-105 hover:shadow-2xl' : '';
+  const hoverEffects = hover ? 'hover:shadow-2xl' : '';
   
   const classes = `${baseClasses} ${variants[variant]} ${paddings[padding]} ${hoverEffects} ${className}`;
   

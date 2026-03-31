@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, 
   Users, 
@@ -49,7 +49,7 @@ const ModernDashboardLayout = () => {
       <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 -z-10"></div>
       
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-72 transition-transform duration-300 ease-in-out`}>
+      <aside className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky inset-y-0 left-0 z-40 w-72 h-screen lg:h-auto transition-transform duration-300 ease-in-out`}>
         <GlassCard variant="default" className="h-full m-4 rounded-2xl flex flex-col">
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -135,7 +135,7 @@ const ModernDashboardLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-0 flex-1">
+      <div className="lg:ml-80 flex-1 min-h-screen">
         {/* Top Navigation */}
         <header className="sticky top-0 z-30 backdrop-blur-lg bg-white/70 dark:bg-gray-900/70 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between p-4">

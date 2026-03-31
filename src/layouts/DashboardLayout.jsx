@@ -9,14 +9,16 @@ import {
   X
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    logout();
     navigate('/login');
   };
 
@@ -67,6 +69,10 @@ const DashboardLayout = () => {
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+          <div className="mb-3 px-4">
+            <p className="text-sm text-gray-500">Logged in as:</p>
+            <p className="text-sm font-medium text-gray-900">{user?.phone || 'User'}</p>
+          </div>
           <button
             onClick={handleLogout}
             className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
